@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script>
+        const kaprekatNumber = 6174;
+        const maxCyclesCount = 7;
+        const digitsCount = 4;
+        function calculate() {
+            clearTextArea();
+            let s = txtInput.value;
+            if (!validate(s))
+            {
+                alert("Wrong input");
+                return;
+            }
+            let d = parseInt(s);
+            if (!d) {
+                alert("d must be number");
+                return;
+            }
+            let digits = getDigitsAsArray(d);
+            //if (validate(digits))
+            {               
+                let currentResult = d;
+                let count = 0;
+                while (currentResult != kaprekatNumber) {
+                    count++;
+                    if (count > maxCyclesCount)
+                    {
+                        alert("Not found result after " + maxCyclesCount + " steps");
+                        return;
+                    }
+                    digits = addLeadingZeroes(digits);
+                    let arrMax = copyArray(digits);
+                    arrMax.sort(function (a, b) { return b - a });
+                    let arrMin = copyArray(digits);
+                    arrMin.sort(function (a, b) { return a - b });
+                    let dMax = convertArrayToNumber(arrMax);
+                    let dMin = convertArrayToNumber(arrMin);
+                    currentResult = dMax - dMin;
+                    addTextToTextArea(dMax, dMin);
+                    digits = getDigitsAsArray(currentResult);
+                }
+                //alert("Result=" + currentResult);
+                const txtResult = document.getElementById('txtResult');
+                txtResult.value = currentResult;
+            }
+            //else {
+            //    alert("d is not legal");
+            //    return;
+            //}
+        }
+        function validateArray(arr) {
+            //should be less than 5 elements and have 2 different digits
+            let result = false;
+            if (arr.length <= 4) {
+                arr.sort();
+                for (var i = 0; i < arr.length - 1; i++) {
+                    if (arr[i] < arr[i + 1])
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        function validate(s) {
+            //should be less than 5 elements and have 2 different digits
+            let arr = s.split('');
+            let result = validateArray(arr);
+            return result;
+        }
+        function getDigitsAsArray(num) {
+            var digits = num.toString().split('');
+            var realDigits = digits.map(Number);
+            console.log(realDigits);
+            return realDigits;
+        }
+        function copyArray(arr) {
+            let arrCopy = [];
+            for (var i = 0; i < arr.length; i++) {
+                arrCopy[i] = arr[i];
+            }
+            return arrCopy;
+        }
+        function convertArrayToNumber(arr) {
+           arr=  arr.reverse();
+            let result = arr[0];
+            const ten = 10;
+            let currentPower = ten;
+            for (var i = 1; i < arr.length; i++) {
+                result += arr[i] * currentPower;
+                currentPower *= ten;
+            }
+            return result;
+        }
+        function addLeadingZeroes(arr) {
+            let result = [];
+            for (var i = 0; i < digitsCount - arr.length; i++) {
+                result.push(0);
+            }
+            for (var i = 0; i < arr.length; i++) {
+                result.push(arr[i]);
+            }
+            return result;
+        }
+        function addTextToTextArea(dMax, dMin) {
+            const textarea = document.getElementById('txtCalc');
+            let text = dMax + " - " + dMin + " = " + (dMax - dMin)+"\r\n";
+            textarea.value += text;
+        }
+        function clearTextArea() {
+            const textarea = document.getElementById('txtCalc');
+            textarea.value = "";
+        }
+        function clearResults() {
+            const txtResult = document.getElementById('txtResult');
+            txtResult.value = "";
+            clearTextArea();
+        }
+    </script>
+</head>
+<body>
+    <table width="90%">
+        <tr>
+            <td colspan="2" style="text-align:center">
+                <b>6174: Kaprekar's constant</b>
+            </td>
+        </tr>
+        <tr>
+            
+            <td>
+                1.Take any four-digit number, using at least two different digits (leading zeros are allowed).
+                <br />
+                2.Arrange the digits in descending and then in ascending order to get two four-digit numbers, adding leading zeros if necessary.
+                <br />
+                3.Subtract the smaller number from the bigger number.<br />
+                4.Go back to step 2 and repeat.
+            </td>
+            <td>
+                1.Возьмите любое четырехзначное число, используя не менее двух разных цифр (допускаются ведущие нули).
+                <br />
+                2.Расположите цифры в порядке убывания, а затем в порядке возрастания, чтобы получить два четырехзначных числа, при необходимости добавляя ведущие нули.
+                <br />
+                3.Вычтите меньшее число из большего числа.<br />
+                4.Вернитесь к шагу 2 и повторите.
+            </td>
+        </tr>
+    </table>
+    Input 4-digit number:<input id="txtInput" type="text" /><br />
+    <input id="btnCalculate" type="button" value="Calculate" onclick="calculate()" /><br />
+    <input id="btnClearResults" type="button" value="Clear results" onclick="clearResults()" /><br />
+    Calculations:<br />
+    <textarea id="txtCalc" rows="7" cols="30"></textarea>
+    <br />
+    <b>Result:</b>
+    <input id="txtResult" type="text" readonly />
+</body>
+</html>
